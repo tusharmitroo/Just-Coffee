@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
      * This method is called when the order button is clicked.
      */
     public void submitOrder(View view) {
-        String priceMessage = "Total: $" + quantity*5;
+        String priceMessage = "Total: $" + calculatePrice(quantity, 10);
         displayMessage(priceMessage);
     }
 
@@ -46,13 +46,21 @@ public class MainActivity extends AppCompatActivity {
         quantityTextView.setText("" + number);
     }
 
+    /*
     /**
      * This method displays the given price on the screen.
-     */
+     *
     private void displayPrice(int number) {
         TextView priceTextView = (TextView) findViewById(R.id.price_text_view);
         priceTextView.setText(NumberFormat.getCurrencyInstance().format(number));
     }
+    */
+
+    private int calculatePrice(int number, int pricePerCup) {
+        int price = number * pricePerCup;
+        return price;
+    }
+
 
     /**
      * This method increases the quantity by one.
@@ -65,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
      * This method decreases the quantity by one.
      */
     public void decQuantity(View view) {
-        display(--quantity);
+        if(quantity!=0) display(--quantity);
     }
 
     /**
