@@ -13,6 +13,7 @@ package com.example.android.justjava;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.text.NumberFormat;
@@ -29,13 +30,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     int quantity = 0;
+    boolean whippedChecked = false;
 
     /**
      * This method is called when the order button is clicked.
      */
     public void submitOrder(View view) {
-        String priceMessage = "Total: $" + calculatePrice(quantity, 10);
-        displayMessage(priceMessage);
+        CheckBox whippedCreamCheckBox = (CheckBox) findViewById(R.id.whipped_cream_checkBox);
+        whippedChecked = whippedCreamCheckBox.isChecked();
+        createOrderSummary(calculatePrice());
     }
 
     /**
@@ -56,9 +59,13 @@ public class MainActivity extends AppCompatActivity {
     }
     */
 
-    private int calculatePrice(int number, int pricePerCup) {
-        int price = number * pricePerCup;
-        return price;
+    private int calculatePrice() {
+        return quantity*10;
+    }
+
+    public void createOrderSummary(int price) {
+        String summary = "Quantity: " + quantity + "\nAdd whipped cream? " + whippedChecked + "\nPrice: $" + price;
+        displayMessage(summary);
     }
 
 
@@ -80,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
      * This method displays the given text on the screen.
      */
     private void displayMessage(String message) {
-        TextView priceTextView = (TextView) findViewById(R.id.price_text_view);
-        priceTextView.setText(message + "\n" + "Thank You!");
+        TextView orderSummaryTextView = (TextView) findViewById(R.id.order_summary_text_view);
+        orderSummaryTextView.setText(message + "\n" + "Thank You!");
     }
 }
