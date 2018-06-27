@@ -10,11 +10,15 @@ package com.example.android.justjava;
 
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.NumberFormat;
 
@@ -31,22 +35,25 @@ public class MainActivity extends AppCompatActivity {
 
     int quantity = 0;
     boolean whippedChecked = false;
+    boolean chocolateChecked = false;
+    int cost = 0;
+    String name = "";
 
     /**
      * This method is called when the order button is clicked.
      */
     public void submitOrder(View view) {
-        CheckBox whippedCreamCheckBox = (CheckBox) findViewById(R.id.whipped_cream_checkBox);
-        whippedChecked = whippedCreamCheckBox.isChecked();
-        createOrderSummary(calculatePrice());
+        EditText nameEditTextView = (EditText) findViewById(R.id.name_edit_text_view);
+        name = nameEditTextView.getText().toString();
+        createOrderSummary();
     }
 
     /**
      * This method displays the given quantity value on the screen.
      */
-    private void display(int number) {
+    private void display() {
         TextView quantityTextView = (TextView) findViewById(R.id.quantity_text_view);
-        quantityTextView.setText("" + number);
+        quantityTextView.setText("" + quantity);
     }
 
     /*
@@ -59,13 +66,31 @@ public class MainActivity extends AppCompatActivity {
     }
     */
 
-    private int calculatePrice() {
-        return quantity*10;
+    private void calculatePrice() {
+        CheckBox whippedCreamCheckBox = (CheckBox) findViewById(R.id.whipped_cream_checkBox);
+        whippedChecked = whippedCreamCheckBox.isChecked();
+        CheckBox chocolateCheckbox = (CheckBox) findViewById(R.id.chocolate_checkBox);
+        chocolateChecked = chocolateCheckbox.isChecked();
+        int price = 10;
+        if(whippedChecked) price++;
+        if(chocolateChecked) price += 2;
+        cost = quantity*price;
     }
 
-    public void createOrderSummary(int price) {
-        String summary = "Quantity: " + quantity + "\nAdd whipped cream? " + whippedChecked + "\nPrice: $" + price;
-        displayMessage(summary);
+    public void createOrderSummary() {
+        calculatePrice();
+        String summary = "Quantity: " + quantity;
+        summary += "\nAdd whipped cream? " + whippedChecked;
+        summary += "\nAdd chocolate? " + chocolateChecked;
+        summary += "\nPrice: $" + cost;
+        summary += "\nThank You!";
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Just Coffee order for " + name);
+        intent.putExtra(Intent.EXTRA_TEXT, summary);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
 
@@ -73,21 +98,30 @@ public class MainActivity extends AppCompatActivity {
      * This method increases the quantity by one.
      */
     public void incQuantity(View view) {
-        display(++quantity);
+        if (quantity==100)Toast.makeText(getApplicationContext(), "Woah! Thats too much caffeine!", Toast.LENGTH_SHORT).show();
+        quantity++;
+        display();
     }
 
     /**
      * This method decreases the quantity by one.
      */
     public void decQuantity(View view) {
-        if(quantity!=0) display(--quantity);
+        if(quantity!=0){
+            quantity--;
+            display();
+        }
     }
 
+    public void checkTotal(View view) {
+        calculatePrice();
+        Toast.makeText(this, "$" + cost, Toast.LENGTH_SHORT).show();
+    }
     /**
      * This method displays the given text on the screen.
      */
-    private void displayMessage(String message) {
-        TextView orderSummaryTextView = (TextView) findViewById(R.id.order_summary_text_view);
-        orderSummaryTextView.setText(message + "\n" + "Thank You!");
-    }
+//    private void displayMessage(String message) {
+//
+//        orderSummaryTextView.setText(message + "\n" + "Thank You!");
+//    }
 }
